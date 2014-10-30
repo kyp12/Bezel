@@ -166,33 +166,42 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate,UINaviga
             })
         }
     }
-    
+    //MARK: IB Actions
     @IBAction func cameraButtonPressed(sender: AnyObject) {
         var libraryStatus = ALAssetsLibrary.authorizationStatus()
         var cameraStatus = AVCaptureDevice.authorizationStatusForMediaType(AVMediaTypeVideo)
         self.presentViewController(self.actionController, animated: true, completion: nil)
     }
-    @IBAction func shareButtonPressed(sender: AnyObject) {
-        self.imageProcessingQueue.addOperationWithBlock {
-            if self.hasBackgroundTexture {
-                if let outputImage = self.currentShape.imageWithBackground(self.currentShape.overlayImage, backgroundColor: nil, originalImage: self.currentImage) {
-                    let activitiesController = UIActivityViewController(activityItems: [outputImage], applicationActivities: nil)
-                    NSOperationQueue.mainQueue().addOperationWithBlock({
-                        self.presentViewController(activitiesController, animated: true, completion: nil)
-                    })
+    @IBAction func shareButtonPressed(sender: AnyObject)
+    {
+        self.imageProcessingQueue.addOperationWithBlock
+        {
+            if self.hasBackgroundTexture
+            {
+                if let outputImage = self.currentShape.imageWithBackground(self.currentShape.overlayImage, backgroundColor: nil, originalImage: self.currentImage!)
+                {
+//                    let activitiesController = UIActivityViewController(activityItems: [outputImage], applicationActivities: nil)
+//                    
+//                    NSOperationQueue.mainQueue().addOperationWithBlock({
+//                        self.presentViewController(activitiesController, animated: true, completion: nil)
+//                    })
                 }
-            } else {
-                if let outputImage = self.currentShape.imageWithBackground(nil, backgroundColor: self.currentShape.fillColor, originalImage: self.currentImage) {
-                    let activitiesController = UIActivityViewController(activityItems: [outputImage], applicationActivities: nil)
-                    NSOperationQueue.mainQueue().addOperationWithBlock({
-                        self.presentViewController(activitiesController, animated: true, completion: nil)
-                    })
+            }
+            else
+            {
+                if let outputImage = self.currentShape.imageWithBackground(nil, backgroundColor: self.currentShape.fillColor, originalImage: self.currentImage!)
+                {
+//                    let activitiesController = UIActivityViewController(activityItems: [outputImage], applicationActivities: nil)
+//                    NSOperationQueue.mainQueue().addOperationWithBlock({
+//                        self.presentViewController(activitiesController, animated: true, completion: nil)
+//                    })
                 }
             }
         }
+        
     }
 
-    //#Pragma mark - UIImagePickerControllerDelegate
+    //MARK: UIImagePickerControllerDelegate
     
      func imagePickerController(picker: UIImagePickerController!,
         didFinishPickingMediaWithInfo info: [NSObject : AnyObject]!) {
@@ -247,12 +256,12 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate,UINaviga
         })
     }
     
-    //#pragma mark - UIScrollViewDelegate
+    //MARK: UIScrollViewDelegate
     func viewForZoomingInScrollView(scrollView: UIScrollView!) -> UIView! {
         return self.imageView
     }
     
-    //#pragma mark - UICollectionViewDelegate
+    //MARK: - UICollectionViewDelegate
     func collectionView(collectionView: UICollectionView!,
         didSelectItemAtIndexPath indexPath: NSIndexPath!) {
         self.imageProcessingQueue.addOperationWithBlock() {

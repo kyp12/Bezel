@@ -117,7 +117,7 @@ class BezelCollectionViewDataSource: NSObject, UICollectionViewDataSource, Heade
     // Shapes Data Source
     func loadAllShapes(color : UIColor) {
         let filePath = NSBundle.mainBundle().pathForResource("Shapes", ofType: "plist")!
-        let shapesArray = NSArray(contentsOfFile: filePath)
+        let shapesArray = NSArray(contentsOfFile: filePath) as NSArray!
         self.shapes = Array<Shape>()
         
         for info in shapesArray {
@@ -130,20 +130,20 @@ class BezelCollectionViewDataSource: NSObject, UICollectionViewDataSource, Heade
 
     func loadAllTextures() {
         let filePath = NSBundle.mainBundle().pathForResource("Backgrounds", ofType: "plist")!
-        let bgArray = NSArray(contentsOfFile: filePath)
+        let bgArray = NSArray(contentsOfFile: filePath) as NSArray!
         self.backgrounds = Array<UIImage>()
         let addBgThumb = UIImage(named: "addPhoto.png")
-        self.backgroundThumbs.append(addBgThumb)
+        self.backgroundThumbs.append(addBgThumb!)
 
         for info in bgArray {
             if let bgDict = info as? NSDictionary {
                 if let imageName = info["imageName"] as? String {
                     var thumbName = imageName + "_thumb"
                     let bgThumb = UIImage(named: thumbName)
-                    self.backgroundThumbs.append(bgThumb)
+                    self.backgroundThumbs.append(bgThumb!)
                     self.diskIOQueue.addOperationWithBlock { () -> Void in
                         let bg = UIImage(named: imageName)
-                        self.backgrounds.append(bg)
+                        self.backgrounds.append(bg!)
                     }
                 }
             }

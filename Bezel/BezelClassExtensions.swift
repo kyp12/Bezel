@@ -59,7 +59,7 @@ extension UIImage {
 , withInputParameters: ["inputImage" : image.CIImage, kCIInputBackgroundImageKey : background.CIImage, kCIInputMaskImageKey : mask.CIImage]
         */
         let outputImage = blendFilter.outputImage
-        return UIImage(CIImage: outputImage)
+        return UIImage(CIImage: outputImage)!
     }
     
     func resizeImage(toSize size: CGSize) {

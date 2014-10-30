@@ -73,7 +73,7 @@ class Shape {
         compositeFilter.setValue(CIImage(CGImage: originalImage.CGImage), forKey: kCIInputImageKey)
         compositeFilter.setValue(CIImage(CGImage: imageMask.CGImage), forKey: kCIInputMaskImageKey)
         var compositeImage = compositeFilter.outputImage
-        var maskedImage = UIImage(CIImage: compositeImage)
+        var maskedImage = UIImage(CIImage: compositeImage) as UIImage!
         println(maskedImage.size)
         return maskedImage
     }
