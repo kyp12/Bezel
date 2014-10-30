@@ -9,6 +9,7 @@
 import UIKit
 import AssetsLibrary
 import AVFoundation
+import Photos
 
 class ViewController: UIViewController, UIImagePickerControllerDelegate,UINavigationControllerDelegate, UIScrollViewDelegate, UICollectionViewDelegate {
     
@@ -20,6 +21,12 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate,UINaviga
     var imageView : UIImageView!
     var pickingBackground = false
     var hasBackgroundTexture = false
+    
+    
+    let albumName = "Bezel Test"
+    var assetCollection: PHAssetCollection!
+    var photoAsset: PHFetchResult!
+    var albumFound = false
     
     @IBOutlet var scrollView: UIScrollView!
     @IBOutlet var collectionView : UICollectionView!
@@ -47,6 +54,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate,UINaviga
         self.setupCollectionViewDataSource()
         self.setupPickersAndAlertControllers()
         self.setupScrollView()
+        self.setupAppAlbumFolder()
     }
 
     func setupScrollView() {
@@ -156,6 +164,46 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate,UINaviga
         }
     }
     
+    func setupAppAlbumFolder()
+    {
+        let fetchOptions = PHFetchOptions()
+        
+        // Looks for specfic album name
+        fetchOptions.predicate = NSPredicate(format:"title = %@", albumName)
+        
+        let collection = PHAssetCollection.fetchAssetCollectionsWithType(PHAssetCollectionType.Album, subtype: PHAssetCollectionSubtype.Any, options: fetchOptions)
+        
+        if (collection.firstObject != nil)
+        {
+            // found the album name
+            self.albumFound = true
+            self.assetCollection = collection.firstObject as PHAssetCollection
+        }
+        else
+        {
+            // create the album folder for the app
+            println("\\Folder\\\(self.albumName) does not exist... Creating now...")
+            PHPhotoLibrary.sharedPhotoLibrary().performChanges({
+                let request = PHAssetCollectionChangeRequest.creationRequestForAssetCollectionWithTitle(self.albumName)
+                
+                }, completionHandler: { (success, error) -> Void in
+                    println("Creation of folder -> \(self.albumName)")
+                    if (success)
+                    {
+                        println("Finished")
+                        self.albumFound = true
+                        
+                    }
+                    else
+                    {
+                        println(error)
+                    }
+                    
+                    
+            })
+        }
+    }
+    
     func updateShapeColor (color : UIColor) {
         imageProcessingQueue.addOperationWithBlock { () -> Void in
             self.currentColor = color
@@ -185,6 +233,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate,UINaviga
 //                    NSOperationQueue.mainQueue().addOperationWithBlock({
 //                        self.presentViewController(activitiesController, animated: true, completion: nil)
 //                    })
+                    self.saveImageToAlbum(outputImage)
                 }
             }
             else
@@ -195,6 +244,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate,UINaviga
 //                    NSOperationQueue.mainQueue().addOperationWithBlock({
 //                        self.presentViewController(activitiesController, animated: true, completion: nil)
 //                    })
+                    self.saveImageToAlbum(outputImage)
                 }
             }
         }
@@ -289,6 +339,31 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate,UINaviga
         NSOperationQueue.mainQueue().addOperationWithBlock { () -> Void in
             self.cutoutImageView.image = self.currentShape.overlayImage
         }
+    }
+    
+    
+    
+    func saveImageToAlbum(image: UIImage)
+    {
+        // Adding asset to album
+        PHPhotoLibrary.sharedPhotoLibrary().performChanges({
+            let createAssetRequest = PHAssetChangeRequest.creationRequestForAssetFromImage(image)
+            
+            let assetPlaceholder = createAssetRequest.placeholderForCreatedAsset
+            let albumChangeRequest = PHAssetCollectionChangeRequest(forAssetCollection: self.assetCollection, assets: self.photoAsset)
+            albumChangeRequest.addAssets([assetPlaceholder])
+            
+            },
+            completionHandler: { (success, error) -> Void in
+                if (success)
+                {
+                    println("Adding Image to Library -> ")
+                }
+                else
+                {
+                    println("ERROR: \(error)")
+                }
+        })
     }
 }
 

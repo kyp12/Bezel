@@ -68,14 +68,17 @@ class Shape {
             return originalImage
         }
         
-
+        
+        var imageContext = CIContext(options: nil)
         var compositeFilter = CIFilter(name: "CIBlendWithAlphaMask")
         compositeFilter.setValue(CIImage(CGImage: originalImage.CGImage), forKey: kCIInputImageKey)
         compositeFilter.setValue(CIImage(CGImage: imageMask.CGImage), forKey: kCIInputMaskImageKey)
         var compositeImage = compositeFilter.outputImage
-        var maskedImage = UIImage(CIImage: compositeImage) as UIImage!
-        println(maskedImage.size)
+        let cgimage = imageContext.createCGImage(compositeFilter.outputImage, fromRect: compositeFilter.outputImage.extent())
+        var maskedImage = UIImage(CGImage: cgimage)
+        println(maskedImage?.size)
         return maskedImage
     }
+    
     
 }
